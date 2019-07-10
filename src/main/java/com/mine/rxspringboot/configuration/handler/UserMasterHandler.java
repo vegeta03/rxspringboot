@@ -5,12 +5,11 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import com.mine.rxspringboot.data.entity.UserMaster;
+import com.mine.rxspringboot.data.collection.UserMasterCollection;
 import com.mine.rxspringboot.data.repository.UserMasterRepository;
 
 import reactor.core.publisher.Mono;
@@ -25,21 +24,21 @@ public class UserMasterHandler {
         return ServerResponse
                 .ok()
                 .contentType(APPLICATION_JSON_UTF8)
-                .body(userMasterRepository.findAll(), UserMaster.class);
+                .body(userMasterRepository.findAll(), UserMasterCollection.class);
     }
 
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
-        Mono<UserMaster> userMasterMono = serverRequest.bodyToMono(UserMaster.class);
+        Mono<UserMasterCollection> userMasterMono = serverRequest.bodyToMono(UserMasterCollection.class);
         return userMasterMono.flatMap(userMaster -> ServerResponse
                 .status(HttpStatus.CREATED)
                 .contentType(APPLICATION_JSON_UTF8)
-                .body(userMasterRepository.save(userMaster), UserMaster.class));
+                .body(userMasterRepository.save(userMaster), UserMasterCollection.class));
     }
 
     public Mono<ServerResponse> getUser(ServerRequest serverRequest) {
         String username = serverRequest.pathVariable("username");
         Mono<ServerResponse> notFoundMono = ServerResponse.notFound().build();
-        Mono<UserMaster> userMono = userMasterRepository.findByUsername(username);
+        Mono<UserMasterCollection> userMono = userMasterRepository.findByUsername(username);
         return userMono
                 .flatMap(user -> ServerResponse
                         .ok()
